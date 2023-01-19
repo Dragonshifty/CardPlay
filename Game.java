@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Collections;
+import java.util.InputMismatchException;
 import java.util.LinkedList;
 public class Game {
 
@@ -46,7 +47,7 @@ public class Game {
     }
 
     public void showCompyHand(){
-        System.out.println("Your hand:\n");
+        System.out.println("Compy hand:\n");
         for (int i = 0; i < compyHand.size(); i++){
             System.out.println(compyHand.get(i));
         }
@@ -89,6 +90,7 @@ public class Game {
                 showCardInPlay();
                 DisplayScores();
 
+                try {
                 System.out.println("Which card do you wish to play? ");
                 Scanner input = new Scanner(System.in);
                 selection = input.nextInt() - 1;
@@ -97,24 +99,37 @@ public class Game {
                     // input.close();
                 } else {
                     System.out.println("\nMust be a number between 1 and 5.\n");
+                }
+                } catch (InputMismatchException e) {
+                    System.out.println("Must be a number between 1 and 5");
                 }                
             }
             proceed = false;
 
+            // Get card in play from top of card pile
             cardInPlay = cardPile.getFirst();
+
+            // Get played from player hand
             cardPlayed = playerHand.get(selection);
+
+            // Send player's card to top of the card pile
             cardPile.addFirst(playerHand.remove(selection));
+            
+            // Player gets new card and sorts order
             GetNewCard("Player");
             Collections.sort(playerHand);
 
+            //Compare player card to card in play
             int HighLowDraw = cardPlayed.compareTo(cardInPlay);
             int difference = Card.GetDifference(cardPlayed, cardInPlay);
             boolean isAMatch = Card.CheckSuitMatch(cardPlayed, cardInPlay);
 
             // System.out.println(HighLowDraw);
 
+            // Set up score instance
             Score score = Score.getScoreInstance();
 
+            // Score player
             switch(HighLowDraw){
                 case 0:
                     System.out.println("No Score change");
@@ -123,23 +138,42 @@ public class Game {
                     if (isAMatch){
                         difference *= 2;
                         System.out.println("\nMatching suit, double score: " + difference + "\n");
-                        score.setPlayerScore(difference, 1);
+                        score.setPlayerScore(difference);
                     } else {
                         System.out.println("\nScore: +" + difference + "\n");
-                        score.setPlayerScore(difference, 1);
+                        score.setPlayerScore(difference);
                     }
                     break;
                 case -1:
                     if (isAMatch){
                         System.out.println("\nSuit match, no score change");
                     } else {
-                        System.out.println("\nScore: -" + difference + "\n");
-                        score.setPlayerScore(difference, 0);
+                        System.out.println("\nScore: " + -difference + "\n");
+                        score.setPlayerScore(-difference);
                     }
-
                     break;
             }
 
+            //Get card in play from top of the card pile
+            cardInPlay = cardPile.getFirst();
+
+            // Compy turn
+            Compy compy  = new Compy();
+            compy.sortHand(compyHand);
+            compy.getCardInPlay(cardInPlay);
+            // compy.showCompyHand();
+
+            // Receive card played index and score
+            int[] compyCardPlayed = compy.possibleScores();
+
+            // Remove card played and add to top of card pile
+            cardPile.addFirst(compyHand.remove(compyCardPlayed[0]));
+
+            // Get new card from deck
+            GetNewCard("Compy");
+
+            // Score compy
+            score.setCompyScore(compyCardPlayed[1]);
 
 
 

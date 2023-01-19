@@ -10,16 +10,24 @@ public class Score {
         return score;
     }
 
-    public void setPlayerScore(int score, int plusMinus){
-        this.playerScore = (plusMinus == 1) ? + score : - score;
+    public void setPlayerScore(int score){
+        // if (plusMinus == 1){
+            this.playerScore += score;
+        // } else {
+        //     this.playerScore -= score;
+        // }
     }
 
     public int getPlayerScore(){
         return playerScore;
     }
 
-    public void setCompyScore(int score, int plusMinus){
-        this.compyScore = (plusMinus == 1) ? + score : - score; 
+    public void setCompyScore(int score){
+        // if (plusMinus == 1){
+            this.compyScore += score;
+        // } else {
+        //     this.compyScore -= score;
+        // }
     }
 
     public int getCompyScore(){
